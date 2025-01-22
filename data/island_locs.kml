@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="island_locs" id="island_locs">
+	<SimpleField name="island_long" type="string"></SimpleField>
+	<SimpleField name="island_short" type="string"></SimpleField>
+</Schema>
+<Folder><name>island_locs</name>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#island_locs">
+		<SimpleData name="island_long">Matinicus Rock</SimpleData>
+		<SimpleData name="island_short">MRNWR</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-68.854548,43.784213</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#island_locs">
+		<SimpleData name="island_long">Seal Island</SimpleData>
+		<SimpleData name="island_short">SINWR</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-68.744878,43.884715</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#island_locs">
+		<SimpleData name="island_long">Machias Seal Island</SimpleData>
+		<SimpleData name="island_short">MSI</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-67.101474,44.501395</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#island_locs">
+		<SimpleData name="island_long">Eastern Egg Rock</SimpleData>
+		<SimpleData name="island_short">EER</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-69.382377,43.860507</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#island_locs">
+		<SimpleData name="island_long">Petit Manan Island</SimpleData>
+		<SimpleData name="island_short">PMNWR</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-67.865695,44.367173</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#island_locs">
+		<SimpleData name="island_long">Stratton Island</SimpleData>
+		<SimpleData name="island_short">STI</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-70.311804,43.504799</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#island_locs">
+		<SimpleData name="island_long">Outer Green Island</SimpleData>
+		<SimpleData name="island_short">OGI</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-70.123831,43.650106</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#island_locs">
+		<SimpleData name="island_long">Jenny Island</SimpleData>
+		<SimpleData name="island_short">JI</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-69.908692,43.76496</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#island_locs">
+		<SimpleData name="island_long">Pond Island</SimpleData>
+		<SimpleData name="island_short">PINWR</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-69.770649,43.739154</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#island_locs">
+		<SimpleData name="island_long">Metinic Island</SimpleData>
+		<SimpleData name="island_short">METIN</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-69.126051,43.883776</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#island_locs">
+		<SimpleData name="island_long">Ship Island</SimpleData>
+		<SimpleData name="island_short">SHIP</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-68.441193,44.233802</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#island_locs">
+		<SimpleData name="island_long">Eastern Brothers Island</SimpleData>
+		<SimpleData name="island_short">EBI</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-67.435477,44.557551</coordinates></Point>
+  </Placemark>
+</Folder>
+</Document></kml>
