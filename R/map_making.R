@@ -135,7 +135,7 @@ inset <-
   theme(panel.border = element_rect(
           colour = "black", linewidth = 0.5, fill = "transparent"),
         panel.background = 
-          element_rect(fill = "#90daeeff"))
+          element_rect(fill = "#6994bfff"))
 inset
 ggsave(inset, filename = here::here("figs/inset.svg"),
        width = 4,
