@@ -1,0 +1,33 @@
+========================================================================
+ Canada and US Border
+------------------------------------------------------------------------
+ https://koordinates.com/layer/111012-canada-and-us-border/
+========================================================================
+From: United States EPA
+
+Description:
+  This dataset represents the international boundary between Canada and the United
+  States.
+  
+  This shapefile is a digital representation of the International boundary between
+  the United States and Canada as per the Treaty of 1908. It has been generated
+  from a combination of recent surveys and datum conversions. It is intended for
+  mapping purposes only.
+
+Region: United States of America
+
+CRS: WGS 84 / Pseudo-Mercator
+
+------------------------------------------------------------------------
+ Processing steps applied by Koordinates
+------------------------------------------------------------------------
+
+- imported to Koordinates in Esri JSON format on 16 Nov 2022
+- converted by Koordinates to Shapefile on 22 Jan 2025 (reference #3858648)
+
+====================
+No license specified
+====================
+
+No license was specified for this layer. This could mean default rights under copyright law for your legal jurisdiction may apply. Please check with Koordinates if you're unsure of your right to access and use this layer.
+

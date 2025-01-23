@@ -12,13 +12,8 @@ library(ggtext)
 library(ggrepel)
 library(smoothr)
 
-# coastline
-coast <- 
-  rnaturalearthhires::states10 %>% 
-  filter(name %in% c("Maine",
-                     "New Brunswick",
-                     "Nova Scotia",
-                     "Québec"))
+# US/Canada border
+ca_brd <- st_read(here::here("data/kx-canada-and-us-border-SHP"))
 
 bathy <- raster::raster(here::here("data/exportImage.tiff")) 
 bathy_df <- 
@@ -76,6 +71,8 @@ map <-
           fill = "#d3f8e2ff",
           color = "black",
           linewidth = 0.01) +
+  geom_sf(data = ca_brd,
+          linewidth = 0.5) +
   geom_sf(data = locs) +
   ggrepel::geom_text_repel(data = locs,
                            aes(label = island_long,
@@ -101,7 +98,7 @@ map <-
                          location = "tr",
                          pad_y = unit(10, "mm"))
 
-
+map
 ggsave(map, filename = here::here("figs/map.svg"),
        width = 7,
        height = 5.5)
