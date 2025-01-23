@@ -254,8 +254,8 @@ plt_out <-
     tag_level = "a",
     tag_prefix = "(",
     tag_suffix = ")") & 
-  theme(axis.title = element_text(size = 11),
-        axis.text = element_text(size = 9))
+  theme(axis.title = element_text(size = 10),
+        axis.text = element_text(size = 8))
 
 ggsave(plt_out,
        filename = here::here("figs/asap_herring_comps.png"),
