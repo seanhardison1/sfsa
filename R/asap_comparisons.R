@@ -11,8 +11,7 @@ library(tsibble)
 library(sp)
 library(lubridate)
 library(readxl)
-library(mgcv)
-library(gratia)
+
 
 # data processing-----
 process <- F
@@ -168,6 +167,27 @@ summary(m4)
 m4_pred <- predict(m4, se.fit = T)
 
 
+# tidy summaries
+bind_rows(
+  broom::tidy(m1) %>% 
+    mutate(model = "age1",
+           r2 = summary(m1)$r.square),
+  broom::tidy(m2) %>% 
+    mutate(model = "age2",
+           r2 = summary(m2)$r.square),
+  broom::tidy(m3) %>% 
+    mutate(model = "age3",
+           r2 = summary(m3)$r.square),
+  broom::tidy(m4) %>% 
+    mutate(model = "age4",
+           r2 = summary(m4)$r.square),
+) %>% 
+  filter(term == "est")
+
+
+
+
+
 pred_df <- tibble(m1_fit = m1_pred$fit,
                   m1_se = m1_pred$se.fit,
                   
@@ -198,14 +218,46 @@ pred_df <- tibble(m1_fit = m1_pred$fit,
   )
 
 
+y_vec <- 
+  c(
+    pred_df %>% 
+      filter(age1 == max(age1)) %>% 
+      pull(age1),
+
+    pred_df %>% 
+      filter(age2_next == max(age2_next, na.rm = T)) %>% 
+      pull(age2_next),
+
+    pred_df %>% 
+      filter(age3_next == max(age3_next, na.rm = T)) %>% 
+      pull(age3_next),
+
+    pred_df %>% 
+      filter(age4_next == max(age4_next, na.rm = T)) %>% 
+      pull(age4_next)
+    )
+
+r2_df <- tibble(x = rep(0.25, 4),
+                y = y_vec,
+                r2 = paste0("R<sup>2</sup> = ",round(c(summary(m1)$r.square,
+                       summary(m2)$r.square,
+                       summary(m3)$r.square,
+                       summary(m4)$r.square),
+                       3)),
+                model = c(1,2,3,4))
+
 # visualize-----
 a <- ggplot(pred_df) +
   geom_point(aes(y = age1, x = est)) +
   geom_line(aes(y = m1_fit, x = est)) + 
   geom_ribbon(aes(ymin = m1_low, ymax = m1_high,
-                  x = est), alpha = 0.25) + 
+                  x = est), alpha = 0.25) +
+  geom_text(data = r2_df %>% 
+              filter(model == 1),
+            aes(x = x, y = y,
+                label = r2)) +
   labs(y = "Age-1 herring abundance",
-       x = "Seabird provisioning index (herring per hour)") +
+       x = "Herring provisioning index (herring per hour)") +
   scale_x_continuous(expand = c(0.01, 0.01)) +
   dream::theme_fade()
 
@@ -215,8 +267,12 @@ b <- ggplot(pred_df %>%
   geom_line(aes(y = m2_fit, x = est)) + 
   geom_ribbon(aes(ymin = m2_low, ymax = m2_high,
                   x = est), alpha = 0.25) + 
+  geom_text(data = r2_df %>% 
+              filter(model == 2),
+            aes(x = x, y = y,
+                label = r2)) +
   labs(y = "Age-2 herring abundance (1-yr lead)",
-       x = "Seabird provisioning index (herring per hour)") +
+       x = "Herring provisioning index (herring per hour)") +
   scale_x_continuous(expand = c(0.01, 0.01)) +
   dream::theme_fade()
 
@@ -227,8 +283,12 @@ c <- ggplot(pred_df %>%
   geom_line(aes(y = m3_fit, x = est)) + 
   geom_ribbon(aes(ymin = m3_low, ymax = m3_high,
                   x = est), alpha = 0.25) + 
+  geom_text(data = r2_df %>% 
+              filter(model == 3),
+            aes(x = x, y = y,
+                label = r2)) +
   labs(y = "Age-3 herring abundance (2-yr lead)",
-       x = "Seabird provisioning index (herring per hour)") +
+       x = "Herring provisioning index (herring per hour)") +
   scale_x_continuous(expand = c(0.01, 0.01)) +
   dream::theme_fade()
 
@@ -239,10 +299,15 @@ d <- ggplot(pred_df %>%
   geom_line(aes(y = m4_fit, x = est)) + 
   geom_ribbon(aes(ymin = m4_low, ymax = m4_high,
                   x = est), alpha = 0.25) + 
+  geom_richtext(data = r2_df %>% 
+              filter(model == 4),
+            aes(x = x, y = y,
+                label = r2),
+            fill = NA, label.color = NA) +
   labs(y = "Age-4 herring abundance (3-yr lead)",
-       x = "Seabird provisioning index (herring per hour)") +
+       x = "Herring provisioning index (herring per hour)") +
   scale_x_continuous(expand = c(0.01, 0.01)) +
-  dream::theme_fade() 
+  dream::theme_fade()
 
 
 

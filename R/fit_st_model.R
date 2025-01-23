@@ -53,6 +53,11 @@ locs <-
                                 island_long == "Eastern Brothers Island" ~ "EB")) %>% 
   st_transform(., ncrs)
 
+# calculate mean inter-island distance-----
+dist_mat <- sf::st_distance(locs)
+dist_vec <- dist_mat[lower.tri(dist_mat, diag = FALSE)]
+(mean_dist <- mean(as.numeric(dist_vec)))
+
 ## bind in island lon/lat----
 df <- tern_feeding_index_raw_simple %>% 
   filter(time != 0,
@@ -164,7 +169,7 @@ isl_preds_plt <-
     facet_wrap(~island_long, scales =
                  "free_y") +
     labs(x = "Year",
-         y = "Herring per hour") +
+         y = "Herring provisioning (herring per hour)") +
     dream::theme_fade() +
     theme(axis.title = element_text(size = 13))
 
@@ -187,9 +192,9 @@ reg_pred_plt <-
     geom_point(aes(y = est, x = year),
               color = "darkorange") +
     labs(x = "Year",
-           y = "Herring per hour") +
+           y = "Herring provisioning index (herring per hour)") +
       dream::theme_fade() +
-      theme(axis.title = element_text(size = 13))
+      theme(axis.title = element_text(size = 9))
 
 reg_pred_plt
 
@@ -278,9 +283,9 @@ knot_compare <-
   ggsci::scale_color_d3() + 
   ggsci::scale_fill_d3() + 
   labs(x = "Year",
-       y = "Herring per hour") +
+       y = "Herring provisioning index (herring per hour)") +
   dream::theme_fade() +
-  theme(axis.title = element_text(size = 13),
+  theme(axis.title = element_text(size = 10),
         legend.position = c(0.8,0.8))
 
 ggsave(knot_compare,
@@ -379,9 +384,9 @@ spat_compare <-
   ggsci::scale_color_d3() + 
   ggsci::scale_fill_d3() + 
   labs(x = "Year",
-       y = "Herring per hour") +
+       y = "Herring provisioning index (herring per hour)") +
   dream::theme_fade() +
-  theme(axis.title = element_text(size = 13),
+  theme(axis.title = element_text(size = 10),
         legend.position = c(0.8,0.8))
 
 
@@ -390,3 +395,10 @@ ggsave(spat_compare,
        dpi = 300,
        width = 6,
        height = 3.5)
+
+# trend in herring provisioning index-----
+xt_mod <- lm(est ~ year,data = x)
+summary(xt_mod)
+acf(residuals(xt_mod))
+xt_mod_sims <- simulateResiduals(xt_mod, n = 1000)
+plot(xt_mod_sims)
