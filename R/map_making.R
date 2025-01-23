@@ -12,16 +12,25 @@ library(ggtext)
 library(ggrepel)
 library(smoothr)
 
-# US/Canada border
+# US/Canada border----
 ca_brd <- st_read(here::here("data/kx-canada-and-us-border-SHP"))
 
+# inset map of US and Canada---- 
+us_ca <- 
+  rnaturalearthhires::countries10 %>% 
+  filter(NAME_EN %in% c("United States of America",
+                        "Canada")) %>% 
+  group_by(NAME_EN) %>% 
+  dplyr::summarise() 
+
+# bathy details (ETOPO1)-----
 bathy <- raster::raster(here::here("data/exportImage.tiff")) 
 bathy_df <- 
   bathy %>% 
   dream::rst_to_tib(., var_name = "depth") %>% 
   filter(depth < 200)
 
-
+# make coastline-----
 topo_rast <- raster::raster(here::here("data/exportImage.tiff")) %>% 
   disaggregate(., fact = 5)
 topo_rast[topo_rast < 0] <- NA  
@@ -32,7 +41,7 @@ coast_sf <- as.polygons(topo_rast2, values=TRUE, dissolve=TRUE) %>%
   smooth(method = "densify") %>%
   smooth(method = "chaikin")
 
-## island locations-----
+# island locations-----
 ncrs <- "+proj=utm +zone=19 +datum=NAD83 +units=km +no_defs"
 
 locs <- 
@@ -55,10 +64,15 @@ locs <-
                        -69.126051, -68.441193, -67.435477)) %>% 
   st_as_sf(., coords = c("longitude","latitude"), crs = 4326)
 
+# write out locations----
 write_sf(locs, here::here("data/island_locs.kml"))
 
-
+# GOM map making-----
 depth_pal <- pals::kovesi.linear_blue_95_50_c20(100)
+x_min <- -70.5
+x_max <- -66.0
+y_min <- 43.0
+y_max <- 45.25
 
 map <- 
   ggplot() +
@@ -82,15 +96,15 @@ map <-
                            max.overlaps = 10,
                            segment.color = "black",
                            nudge_y = -0.5)+
-  coord_sf(xlim = c(-70.5, -66.),
-           ylim = c(43, 45.25)) +
+  coord_sf(xlim = c(x_min, x_max),
+           ylim = c(y_min, y_max)) +
   scale_fill_gradientn(colors=as.vector(depth_pal)) +
   theme(panel.background = 
           element_rect(fill = "#90daeeff"),
         text = element_text(size = 10),
         panel.grid = element_blank(),
         panel.border = element_rect(
-          colour = "black", size = 0.5, fill = "transparent"),
+          colour = "black", linewidth = 0.5, fill = "transparent"),
         axis.title = element_blank()) +
   annotation_scale(location = "br") +
   annotation_north_arrow(which_north = "true",
@@ -103,3 +117,26 @@ ggsave(map, filename = here::here("figs/map.svg"),
        width = 7,
        height = 5.5)
 
+# island inset map-----
+bbox <- st_as_sfc(st_bbox(c(xmin = x_min, xmax = x_max, 
+                            ymin = y_min, ymax = y_max),
+                          crs = 4326))
+inset <- 
+  ggplot() +
+  geom_sf(data = us_ca,
+          fill = "#d3f8e2ff") + 
+  geom_sf(data = bbox,
+          fill = 'transparent',
+          color= "red",
+          linewidth = 1) +
+  coord_sf(xlim = c(-85.5, -60.5),
+           ylim = c(25, 55)) + 
+  theme_void() + 
+  theme(panel.border = element_rect(
+          colour = "black", linewidth = 0.5, fill = "transparent"),
+        panel.background = 
+          element_rect(fill = "#90daeeff"))
+inset
+ggsave(inset, filename = here::here("figs/inset.svg"),
+       width = 4,
+       height = 7)
