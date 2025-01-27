@@ -219,13 +219,7 @@ ndf <- df %>%
          ym_fac = factor(NA))
 
 ## island-level predictions-----
-p <- predict(m1_simple,
-             newdata = ndf,
-             model = NA,
-             re_form = NULL,
-             re_form_iid = NA,
-             nsim = 1000,
-             type = "link")
+load(here::here("data/st_model_pred_sims.rdata"))
 
 ## process predictions-----
 isl_preds <-

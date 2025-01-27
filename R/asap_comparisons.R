@@ -10,6 +10,7 @@ library(DHARMa)
 library(tsibble)
 library(sp)
 library(lubridate)
+library(ggtext)
 library(readxl)
 
 
@@ -74,24 +75,7 @@ df <- tern_feeding_index_raw_simple %>%
 load(here::here("data/fitted_dl_model_1014.rdata"))
 
 ## data for prediction-----
-ndf <- df %>%
-  dplyr::select(year_fac, year) %>%
-  distinct() %>%
-  expand_grid(.,
-              df %>%
-                dplyr::select(lat, lon, island, island_long) %>%
-                distinct()) %>%
-  mutate(loc_nest_year = factor(NA),
-         ym_fac = factor(NA))
-
-## island-level predictions-----
-p <- predict(m1_simple,
-             newdata = ndf,
-             model = NA,
-             re_form = NULL,
-             re_form_iid = NA,
-             nsim = 1000,
-             type = "link")
+load(here::here("data/st_model_pred_sims.rdata"))
 
 ## annual index
 x <- get_index_sims(p,

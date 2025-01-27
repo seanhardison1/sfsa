@@ -133,14 +133,20 @@ ndf <- df %>%
   mutate(loc_nest_year = factor(NA),
          ym_fac = factor(NA))
 
-## island-level predictions-----
-p <- predict(m1_simple,
-             newdata = ndf,
-             model = NA,
-             re_form = NULL,
-             re_form_iid = NA,
-             nsim = 1000,
-             type = "link")
+if (process){
+  ## island-level predictions-----
+  p <- predict(m1_simple,
+               newdata = ndf,
+               model = NA,
+               re_form = NULL,
+               re_form_iid = NA,
+               nsim = 1000,
+               type = "link")
+  save(p, file = here::here("data/st_model_pred_sims.rdata"))
+} else {
+  load(here::here("data/st_model_pred_sims.rdata"))
+}
+
 
 ## process predictions-----
 isl_preds <-
@@ -182,6 +188,15 @@ ggsave(isl_preds_plt,
 ## across-island predictions----
 x <- get_index_sims(p,
                     agg_function = function(x) median(exp(x)))
+
+## write out index-----
+x2 <- x %>% 
+  dplyr::mutate(log_se = log(se)) %>% 
+  dplyr::rename(estimate = est,
+                log_estimate = log_est
+                )
+write_csv(x2, here::here("data/herring_provisioning_index1_27.csv"))
+
 
 ## visualize-----
 reg_pred_plt <-
