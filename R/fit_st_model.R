@@ -75,6 +75,8 @@ df <- tern_feeding_index_raw_simple %>%
          island_long = factor(island_long,
                               levels = unique(.$island_long[order(.$lon)])))
 
+# length(unique(df$loc_nest_stint))
+
 ## make mesh (10 knots)----
 mesh <- make_mesh(df, c("lon", "lat"), n_knots = 10)
 plot(mesh)
@@ -219,11 +221,27 @@ ggsave(reg_pred_plt,
        height = 3,
        width = 5)
 
-# fit model using 12 knots-----
+# fit model using 12 and 8 knots-----
 mesh_12k <- make_mesh(df, c("lon", "lat"), n_knots = 12)
-plot(mesh_12k)
+mesh_8k <- make_mesh(df, c("lon", "lat"), n_knots = 8)
 
 if (process){
+  # 8 knot model----
+  m1_8k <- 
+    sdmTMB(herring_per_hour ~ 0 + 
+             year_fac + 
+             (1|ym_fac) +
+             (1|loc_nest_year),
+           spatial = "on",
+           spatiotemporal = "ar1",
+           time = "year",
+           mesh = mesh_8k,
+           data = df,
+           family = delta_lognormal()
+    )
+  
+  
+  # 12 knot model-----
   m1_12k <- 
     sdmTMB(herring_per_hour ~ 0 + 
              year_fac + 
@@ -238,6 +256,14 @@ if (process){
     )
   
   ## island-level predictions-----
+  p_8k <- predict(m1_8k,
+                   newdata = ndf,
+                   model = NA,
+                   re_form = NULL,
+                   re_form_iid = NA,
+                   nsim = 1000,
+                   type = "link")
+  
   p_12k <- predict(m1_12k,
                newdata = ndf,
                model = NA,
@@ -247,6 +273,19 @@ if (process){
                type = "link")
   
   # process predictions-----
+  isl_preds_8k <-
+    p_8k %>%
+    bind_cols(., ndf %>%
+                dplyr::select(-loc_nest_year,-ym_fac)) %>%
+    gather(sim, value, -year_fac:-island_long) %>%
+    group_by_at(vars(year_fac:island_long)) %>%
+    dplyr::summarise(est_link = mean(value),
+                     sd_link = sd(value)) %>%
+    mutate(fit_resp = exp(est_link),
+           sd_resp = exp(sd_link),
+           upr_resp = exp(est_link + (2 * sd_link)),
+           lwr_resp = exp(est_link - (2 * sd_link)))
+  
   isl_preds_12k <-
     p_12k %>%
     bind_cols(., ndf %>%
@@ -264,10 +303,16 @@ if (process){
   x_12k <- get_index_sims(p_12k,
                       agg_function = function(x) median(exp(x)))
   
+  x_8k <- get_index_sims(p_8k,
+                          agg_function = function(x) median(exp(x)))
+  
 
   save(m1_12k,
-       isl_preds_12k, 
+       m1_8k,
+       isl_preds_12k,
+       isl_preds_8k,
        x_12k,
+       x_8k,
        file = here::here("data/fitted_dl_model_12k.rdata"))
 } else {
   load(here::here("data/fitted_dl_model_12k.rdata"))
@@ -279,21 +324,25 @@ x_knots <-
     x %>% 
       mutate(`N knots` = "10"),
     x_12k %>% 
-      mutate(`N knots` = "12")
+      mutate(`N knots` = "12"),
+    x_8k %>% 
+      mutate(`N knots` = "8")
   )
 
-knot_compare <- 
+
+knot_compare <-
   ggplot() + 
+  geom_ribbon(data = x_knots,
+              aes(x = year, ymin = lwr, ymax = upr,
+                  fill = `N knots`), 
+              alpha = 0.1) +
   geom_line(data = x_knots,
             aes(y = est, x = year,
                 color = `N knots`)) +
   geom_point(data = x_knots,
              aes(y = est, x = year,
                  color = `N knots`)) +
-  geom_ribbon(data = x_knots,
-              aes(x = year, ymin = lwr, ymax = upr,
-                  fill = `N knots`), 
-              alpha = 0.2) +
+
   scale_x_continuous(expand = c(0.01, 0.01)) +
   ggsci::scale_color_d3() + 
   ggsci::scale_fill_d3() + 
