@@ -86,6 +86,9 @@ mesh <- make_mesh(df, c("lon", "lat"), n_knots = 10)
 plot(mesh)
 
 # fit model using 10 knots-----
+# you will need to run the scripts where we fit the spatiotemporal models rather than load them
+# because the output files "fitted_dl_model_1014.rdata" and "fitted_dl_model_12k.rdata" 
+# are too large to push to github. Email seanhardison@gmail.com if I can help troubleshoot
 process <- F
 if (process){
   # fit model
